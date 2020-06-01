@@ -15,6 +15,7 @@ pub enum OSType {
     Redhat,
     OSX,
     Ubuntu,
+    Fedora,
     Debian,
     Arch,
     Manjaro,
@@ -110,10 +111,15 @@ fn rhel_release() -> OSInformation {
                     os_type: OSType::CentOS,
                     version: release.version.unwrap_or(default_version()),
                 }
-            } else {
+            } else if release.distro == Some("RedHat".to_string()) {
                 OSInformation {
                     os_type: OSType::Redhat,
                     version: release.version.unwrap_or(default_version()),
+                }
+            } else {
+                OSInformation {
+                    os_type: OSType::Fedora,
+                    version: release.version.unwrap_or_else(default_version),
                 }
             }
         }

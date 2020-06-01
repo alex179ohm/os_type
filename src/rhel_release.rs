@@ -29,23 +29,30 @@ pub fn retrieve() -> Option<RHELRelease> {
         } else {
             None
         }
-    }
+    } 
 }
 
 pub fn parse(file: String) -> RHELRelease {
     let distrib_regex = Regex::new(r"(\w+) Linux release").unwrap();
     let version_regex = Regex::new(r"release\s([\w\.]+)").unwrap();
+    let fedora_regex = Regex::new(r"(\w+) release").unwrap();
 
-    let distro = match distrib_regex.captures_iter(&file).next() {
-        Some(m) => {
+    let distro = if let Some(m) = distrib_regex.captures_iter(&file).next() {
             match m.get(1) {
                 Some(distro) => {
                     Some(distro.as_str().to_owned())
                 },
                 None => None
             }
-        },
-        None => None
+        } else {
+            if let Some(m) = fedora_regex.captures_iter(&file).next() {
+                match m.get(1) {
+                    Some(distro) => Some(distro.as_str().to_owned()),
+                    None => None,
+                }
+            } else {
+                None
+            }
     };
 
     let version = match version_regex.captures_iter(&file).next() {
